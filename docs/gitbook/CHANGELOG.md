@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/taskforcesh/bullmq/compare/v1.12.3...v1.13.0) (2020-12-30)
+
+
+### Features
+
+* add support for manually processing jobs fixes [#327](https://github.com/taskforcesh/bullmq/issues/327) ([e42bfd2](https://github.com/taskforcesh/bullmq/commit/e42bfd2814fc5136b175470c3085355090cc2e01))
+
 ## [1.12.3](https://github.com/taskforcesh/bullmq/compare/v1.12.2...v1.12.3) (2020-12-28)
 
 
