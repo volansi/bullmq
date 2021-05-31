@@ -23,11 +23,11 @@ const processSendAsync = promisify(process.send.bind(process)) as (
 // https://stackoverflow.com/questions/18391212/is-it-not-possible-to-stringify-an-error-using-json-stringify
 if (!('toJSON' in Error.prototype)) {
   Object.defineProperty(Error.prototype, 'toJSON', {
-    value: function() {
+    value: function () {
       const alt: any = {};
       const _this = this;
 
-      Object.getOwnPropertyNames(_this).forEach(function(key) {
+      Object.getOwnPropertyNames(_this).forEach(function (key) {
         alt[key] = _this[key];
       }, this);
 
@@ -53,26 +53,27 @@ process.on('SIGINT', waitForCurrentJobAndExit);
 process.on('message', msg => {
   switch (msg.cmd) {
     case 'init':
-      processor = require(msg.value);
-      if (processor.default) {
-        // support es2015 module.
-        processor = processor.default;
-      }
-      if (processor.length > 1) {
-        processor = promisify(processor);
-      } else {
-        const origProcessor = processor;
-        processor = function() {
-          try {
-            return Promise.resolve(origProcessor.apply(null, arguments));
-          } catch (err) {
-            return Promise.reject(err);
-          }
-        };
-      }
-      status = 'IDLE';
-      process.send({
-        cmd: 'init-complete',
+      processor = import(msg.value).then(mod => {
+        if (mod.default) {
+          // support es2015 module.
+          processor = mod.default;
+        }
+        if (processor.length > 1) {
+          processor = promisify(processor);
+        } else {
+          const origProcessor = processor;
+          processor = function () {
+            try {
+              return Promise.resolve(origProcessor.apply(null, arguments));
+            } catch (err) {
+              return Promise.reject(err);
+            }
+          };
+        }
+        status = 'IDLE';
+        process.send({
+          cmd: 'init-complete',
+        });
       });
       break;
 
